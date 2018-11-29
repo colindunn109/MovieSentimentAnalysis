@@ -7,8 +7,11 @@ import numpy
 import nltk
 from nltk.corpus import stopwords
 from nltk.sentiment import SentimentAnalyzer
+from sklearn.feature_extraction import DictVectorizer
+
 
 wordList = []
+vec = DictVectorizer()
 # Load and read our data set
 
 def loadDataset():
@@ -55,7 +58,7 @@ def getSentiment(words):
 	unigramFeats = sentimentAnalyzer.unigram_word_feats(words)
 	#what do we do with the unigrams?
 		
-		
+
 
 dataSet = loadDataset()
 
@@ -63,3 +66,9 @@ temp = wordListCreator(dataSet)
 temp2 = preProcessingStopWords(temp)
 temp3 = convertToDict(temp2)
 temp4 = getSentiment(temp3)
+ourDict = convertToDict(temp2)
+vec.fit_transform(ourDict).toarray()
+print(vec.get_feature_names())
+
+
+
