@@ -11,8 +11,9 @@ from sklearn.feature_extraction import DictVectorizer
 
 wordList = []
 vec = DictVectorizer()
-# Load and read our data set
 
+
+# Load and read our data set
 def loadDataset():
  	trainSet = []
  	train = open('train.csv')
@@ -27,19 +28,19 @@ def loadDataset():
  	return trainSet
 
 
-# create a dictionary such that key = word
-# and value is the amount of times the word is found
 
-# random comment
+# iterates through dataSet and creates a list of all words
 def wordListCreator(trainSet):
 	for i in range(0,len(trainSet)):
 		instanceList = trainSet[i]
 		instanceWords = instanceList[2]
 		tokenWords = nltk.word_tokenize(instanceWords)
 		wordList.extend(tokenWords)
-	print(wordList)
+	#print(wordList)
 	return wordList
 
+
+# function to remove stopwords from our list of words
 def preProcessingStopWords(tokenList):
 	stopWords = set(stopwords.words('english'))
 	filteredSentence = []
@@ -49,22 +50,64 @@ def preProcessingStopWords(tokenList):
 
 	return filteredSentence
 
+# creates a dictionary with the word and its occurence in the dataset
+# key = word & value = count
 def convertToDict(processedList):
 	d = {}
 	for word in processedList:
 		d[word] = d.get(word, 0) + 1
 	return d
 
+# function to write our lists to a file.
+def writeToFile(wordList, featureNames):
+
+	w = open("wordList", 'w')
+	f = open("featureList", 'w')
+
+	for listitem in wordList:
+		w.write('%s\n' % listitem)
+	for listitem in featureNames:
+		f.write('%s\n' % listitem)
+	
 
 
 
+#dataset in list form
 dataSet = loadDataset()
 
+#List of all the words in DataSet
 temp = wordListCreator(dataSet)
+
+#Cleaned temp
 temp2 = preProcessingStopWords(temp)
+
+#Converted words in dataset to dictionary with total appearances as value
 ourDict = convertToDict(temp2)
+
+#nltk feature extraction
 vec.fit_transform(ourDict).toarray()
-print(vec.get_feature_names())
+
+#vectorized list of features
+featureNames = vec.get_feature_names()
+
+#writeToFile(temp2, featureNames)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
