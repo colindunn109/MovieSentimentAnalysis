@@ -3,6 +3,11 @@ import csv
 import math
 import operator
 import sys
+import numpy
+import nltk
+
+nltk.download('punkt')
+
 
 # Load and read our data set
 
@@ -28,6 +33,10 @@ def wordDictionary(trainSet):
 	for i in range(0,2):
 		instanceList = trainSet[i]
 		instanceWords = instanceList[2]
+		tokenWords = nltk.word_tokenize(instanceWords)
+		print(instanceWords)
+		print(tokenWords)
+
 		
 		
 
