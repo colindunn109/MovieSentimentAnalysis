@@ -30,7 +30,7 @@ def loadDataset():
 # create a dictionary such that key = word
 # and value is the amount of times the word is found
 
-
+# random comment
 def wordListCreator(trainSet):
 	for i in range(0,len(trainSet)):
 		instanceList = trainSet[i]
@@ -57,7 +57,6 @@ def convertToDict(processedList):
 
 
 
-	
 
 dataSet = loadDataset()
 
