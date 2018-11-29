@@ -6,10 +6,11 @@ import sys
 import numpy
 import nltk
 from nltk.corpus import stopwords
+from sklearn.feature_extraction import DictVectorizer
 
-nltk.download('punkt')
 
 wordList = []
+vec = DictVectorizer()
 # Load and read our data set
 
 def loadDataset():
@@ -56,12 +57,15 @@ def convertToDict(processedList):
 
 
 
-		
-		
+	
 
 dataSet = loadDataset()
 
 temp = wordListCreator(dataSet)
 temp2 = preProcessingStopWords(temp)
-temp3 = convertToDict(temp2)
-print(temp3)
+ourDict = convertToDict(temp2)
+vec.fit_transform(ourDict).toarray()
+print(vec.get_feature_names())
+
+
+
