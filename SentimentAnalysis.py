@@ -71,26 +71,28 @@ def writeToFile(wordList, featureNames):
 	
 
 
+def PreProcessing():
+	#dataset in list form
+	dataSet = loadDataset()
 
-#dataset in list form
-dataSet = loadDataset()
+	#List of all the words in DataSet
+	wordList = wordListCreator(dataSet)
 
-#List of all the words in DataSet
-temp = wordListCreator(dataSet)
+	#Cleaned temp
+	processedList = preProcessingStopWords(wordList)
 
-#Cleaned temp
-temp2 = preProcessingStopWords(temp)
+	#Converted words in dataset to dictionary with total appearances as value
+	wordDictionary = convertToDict(processedList)
 
-#Converted words in dataset to dictionary with total appearances as value
-ourDict = convertToDict(temp2)
+	#nltk feature extraction
+	vec.fit_transform(wordDictionary).toarray()
 
-#nltk feature extraction
-vec.fit_transform(ourDict).toarray()
+	#vectorized list of features
+	featureNames = vec.get_feature_names()
 
-#vectorized list of features
-featureNames = vec.get_feature_names()
+	#writeToFile(temp2, featureNames)
 
-#writeToFile(temp2, featureNames)
+PreProcessing()
 
 
 
