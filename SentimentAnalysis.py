@@ -5,6 +5,7 @@ import operator
 import sys
 import numpy
 import nltk
+from nltk.corpus import stopwords
 
 nltk.download('punkt')
 
@@ -36,6 +37,17 @@ def wordListCreator(trainSet):
 		tokenWords = nltk.word_tokenize(instanceWords)
 		wordList.extend(tokenWords)
 	print(wordList)
+	return wordList
+
+def preProcessingStopWords(tokenList):
+	stopWords = set(stopwords.words('english'))
+	filteredSentence = []
+	for word in tokenList:
+		if(word not in stopWords):
+			filteredSentence.append(word)
+
+	return filteredSentence
+
 
 
 		
@@ -43,4 +55,6 @@ def wordListCreator(trainSet):
 
 dataSet = loadDataset()
 
-wordListCreator(dataSet)
+temp = wordListCreator(dataSet)
+temp2 = preProcessingStopWords(temp)
+print(temp2)
