@@ -48,6 +48,12 @@ def preProcessingStopWords(tokenList):
 
 	return filteredSentence
 
+def convertToDict(processedList):
+	d = {}
+	for word in processedList:
+		d[word] = d.get(word, 0) + 1
+	return d
+
 
 
 		
@@ -57,4 +63,5 @@ dataSet = loadDataset()
 
 temp = wordListCreator(dataSet)
 temp2 = preProcessingStopWords(temp)
-print(temp2)
+temp3 = convertToDict(temp2)
+print(temp3)
