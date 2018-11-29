@@ -17,11 +17,7 @@ vec = DictVectorizer()
 def loadDataset():
  	trainSet = []
  	train = open('train.csv')
- 	trainData = list(csv.reader(train))
-
- 	print(trainData[0])
- 	
-
+ 	trainData = list(csv.reader(train)) 	
  	for i in range(1, len(trainData)):
  		trainSet.append(trainData[i])
 
@@ -38,6 +34,9 @@ def wordListCreator(trainSet):
 		wordList.extend(tokenWords)
 	#print(wordList)
 	return wordList
+
+def filterNonAlphabetical(wordList):
+	return [w for w in wordList if w.isalpha()]
 
 
 # function to remove stopwords from our list of words
@@ -77,6 +76,10 @@ def PreProcessing():
 
 	#List of all the words in DataSet
 	wordList = wordListCreator(dataSet)
+
+	newList = filterNonAlphabetical(wordList)
+	for word in newList :
+		print(word)
 
 	#Cleaned temp
 	processedList = preProcessingStopWords(wordList)
