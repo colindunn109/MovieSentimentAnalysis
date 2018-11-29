@@ -8,7 +8,7 @@ import nltk
 
 nltk.download('punkt')
 
-
+wordList = []
 # Load and read our data set
 
 def loadDataset():
@@ -29,18 +29,18 @@ def loadDataset():
 # and value is the amount of times the word is found
 
 
-def wordDictionary(trainSet):
-	for i in range(0,2):
+def wordListCreator(trainSet):
+	for i in range(0,len(trainSet)):
 		instanceList = trainSet[i]
 		instanceWords = instanceList[2]
 		tokenWords = nltk.word_tokenize(instanceWords)
-		print(instanceWords)
-		print(tokenWords)
+		wordList.extend(tokenWords)
+	print(wordList)
+
 
 		
 		
 
-print("hello")
 dataSet = loadDataset()
 
-wordDictionary(dataSet)
+wordListCreator(dataSet)
