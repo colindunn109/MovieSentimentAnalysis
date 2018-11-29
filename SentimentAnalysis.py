@@ -6,8 +6,7 @@ import sys
 import numpy
 import nltk
 from nltk.corpus import stopwords
-
-nltk.download('punkt')
+from nltk.sentiment import SentimentAnalyzer
 
 wordList = []
 # Load and read our data set
@@ -15,10 +14,7 @@ wordList = []
 def loadDataset():
  	trainSet = []
  	train = open('train.csv')
- 	trainData = list(csv.reader(train))
-
- 	print(trainData[0])
- 	
+ 	trainData = list(csv.reader(train)) 	
 
  	for i in range(1, len(trainData)):
  		trainSet.append(trainData[i])
@@ -36,7 +32,6 @@ def wordListCreator(trainSet):
 		instanceWords = instanceList[2]
 		tokenWords = nltk.word_tokenize(instanceWords)
 		wordList.extend(tokenWords)
-	print(wordList)
 	return wordList
 
 def preProcessingStopWords(tokenList):
@@ -55,7 +50,10 @@ def convertToDict(processedList):
 	return d
 
 
-
+def getSentiment(words):
+	sentimentAnalyzer = SentimentAnalyzer()
+	unigramFeats = sentimentAnalyzer.unigram_word_feats(words)
+	#what do we do with the unigrams?
 		
 		
 
@@ -64,4 +62,4 @@ dataSet = loadDataset()
 temp = wordListCreator(dataSet)
 temp2 = preProcessingStopWords(temp)
 temp3 = convertToDict(temp2)
-print(temp3)
+temp4 = getSentiment(temp3)
