@@ -7,10 +7,11 @@ import numpy
 import nltk
 from nltk.corpus import stopwords
 from sklearn.feature_extraction import DictVectorizer
+from sklearn.feature_extraction.text import CountVectorizer
 
 
 wordList = []
-vec = DictVectorizer()
+vec = CountVectorizer()
 
 
 # Load and read our data set
@@ -30,8 +31,8 @@ def wordListCreator(trainSet):
 	for i in range(0,len(trainSet)):
 		instanceList = trainSet[i]
 		instanceWords = instanceList[2]
-		tokenWords = nltk.word_tokenize(instanceWords)
-		wordList.extend(tokenWords)
+		#tokenWords = nltk.word_tokenize(instanceWords)
+		wordList.append(instanceWords)
 	#print(wordList)
 	return wordList
 
@@ -70,6 +71,7 @@ def writeToFile(wordList, featureNames):
 	
 
 
+
 def PreProcessing():
 	#dataset in list form
 	dataSet = loadDataset()
@@ -78,22 +80,31 @@ def PreProcessing():
 	wordList = wordListCreator(dataSet)
 
 	newList = filterNonAlphabetical(wordList)
-	for word in newList :
-		print(word)
+	#for word in newList :
+		#print(word)
 
-	#Cleaned temp
-	processedList = preProcessingStopWords(wordList)
+	#Cleaned word list
+	processedList = preProcessingStopWords(newList)
 
 	#Converted words in dataset to dictionary with total appearances as value
 	wordDictionary = convertToDict(processedList)
 
 	#nltk feature extraction
-	vec.fit_transform(wordDictionary).toarray()
+	vectorizedMatrix = vec.fit_transform(wordList)
+	#print(vectorizedMatrix)
+
+	f = open("matrix" , 'w')
+	for item in vectorizedMatrix.toarray():
+		f.write('%s\n' % item)
+
+	
+	print(vectorizedMatrix.toarray())
 
 	#vectorized list of features
 	featureNames = vec.get_feature_names()
 
-	#writeToFile(temp2, featureNames)
+
+	writeToFile(wordList,featureNames)
 
 PreProcessing()
 
