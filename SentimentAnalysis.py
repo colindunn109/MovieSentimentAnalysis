@@ -5,6 +5,7 @@ import operator
 import sys
 import numpy
 import nltk
+import re
 from nltk.corpus import stopwords
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
@@ -31,12 +32,14 @@ def wordListCreator(trainSet):
 	for i in range(0,len(trainSet)):
 		instanceList = trainSet[i]
 		instanceWords = instanceList[2]
+		instanceWords = re.sub(r'[^a-zA-Z ]', ' ', instanceWords)
 		#tokenWords = nltk.word_tokenize(instanceWords)
 		wordList.append(instanceWords)
 	#print(wordList)
 	return wordList
 
-def filterNonAlphabetical(wordList):
+
+def filterNonAlphabetical(instanceWords):
 	return [w for w in wordList if w.isalpha()]
 
 
@@ -97,7 +100,7 @@ def PreProcessing():
 	for item in vectorizedMatrix.toarray():
 		f.write('%s\n' % item)
 
-	
+
 	print(vectorizedMatrix.toarray())
 
 	#vectorized list of features
