@@ -46,12 +46,18 @@ def filterNonAlphabetical(instanceWords):
 # function to remove stopwords from our list of words
 def preProcessingStopWords(tokenList):
 	stopWords = set(stopwords.words('english'))
-	filteredSentence = []
-	for word in tokenList:
-		if(word not in stopWords):
-			filteredSentence.append(word)
+	returnList = []
+	for phrase in tokenList:
+		words = phrase.split(' ')
+		tempString = ""
+		for word in words:
+			if(word not in stopWords):
+				tempString += word
+				tempString += " "
+		returnList.append(tempString)
 
-	return filteredSentence
+
+	return returnList
 
 # creates a dictionary with the word and its occurence in the dataset
 # key = word & value = count
@@ -82,12 +88,14 @@ def PreProcessing():
 	#List of all the words in DataSet
 	wordList = wordListCreator(dataSet)
 
-	newList = filterNonAlphabetical(wordList)
+	#newList = filterNonAlphabetical(wordList)
 	#for word in newList :
 		#print(word)
 
 	#Cleaned word list
-	processedList = preProcessingStopWords(newList)
+	processedList = preProcessingStopWords(wordList)
+	for i in processedList:
+		print(i)
 
 	#Converted words in dataset to dictionary with total appearances as value
 	wordDictionary = convertToDict(processedList)
@@ -95,11 +103,6 @@ def PreProcessing():
 	#nltk feature extraction
 	vectorizedMatrix = vec.fit_transform(wordList)
 	#print(vectorizedMatrix)
-
-	f = open("matrix" , 'w')
-	for item in vectorizedMatrix.toarray():
-		f.write('%s\n' % item)
-
 
 	print(vectorizedMatrix.toarray())
 
