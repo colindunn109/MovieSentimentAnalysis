@@ -12,13 +12,22 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
 from sklearn.metrics import accuracy_score
+from sklearn.feature_extraction.text import TfidfVectorizer
 
+
+# ------------------ Variable Names -------------------------
 
 
 wordList = []
 labelList = []
-vec = CountVectorizer()
+vec = TfidfVectorizer()
+#tfidf = TfidfTransformer(smooth_idf = False)
 vectorizedMatrix = []
+
+
+
+# ------------------ Data Set Set-up Functions -----------------------
+
 
 
 # Load and read our data set
@@ -32,7 +41,6 @@ def loadDataset():
  	return trainSet
 
 
-
 # iterates through dataSet and creates a list of all words
 def wordListCreator(trainSet):
 	for i in range(0,len(trainSet)):
@@ -44,7 +52,22 @@ def wordListCreator(trainSet):
 	#print(wordList)
 	return wordList
 
+# function to create a list of labels given the DataSet
 
+def getLabelList(trainSet):
+	for i in range(0, len(trainSet)):
+		trainInstance = trainSet[i]
+		labelList.append(trainInstance[3])
+	return labelList
+
+
+
+
+# -------------- Cleaning Data Set Functions --------------------
+
+
+
+# function to filter out characters that aren't words
 def filterNonAlphabetical(instanceWords):
 	return [w for w in wordList if w.isalpha()]
 
@@ -65,6 +88,7 @@ def preProcessingStopWords(tokenList):
 
 	return returnList
 
+
 # creates a dictionary with the word and its occurence in the dataset
 # key = word & value = count
 def convertToDict(processedList):
@@ -72,6 +96,12 @@ def convertToDict(processedList):
 	for word in processedList:
 		d[word] = d.get(word, 0) + 1
 	return d
+
+
+
+
+
+# --------------- Helper Functions for Testing -----------
 
 # function to write our lists to a file.
 def writeToFile(wordList, featureNames):
@@ -84,15 +114,10 @@ def writeToFile(wordList, featureNames):
 	for listitem in featureNames:
 		f.write('%s\n' % listitem)
 
-# funciton to create a list of labels given the DataSet
-
-def getLabelList(trainSet):
-	for i in range(0, len(trainSet)):
-		trainInstance = trainSet[i]
-		labelList.append(trainInstance[3])
-	return labelList
 
 
+
+# -------------- Main Functions --------------------------
 
 def PreProcessing():
 	#dataset in list form
@@ -104,32 +129,35 @@ def PreProcessing():
 	#List of all the Labels in the Data Set
 	labelList = getLabelList(dataSet)
 
-	#Cleaned word list
+	#Cleaned word list of stop words
 	processedList = preProcessingStopWords(wordList)
-	#for i in processedList:
-		#print(i)
 
 	#Converted words in dataset to dictionary with total appearances as value
 	wordDictionary = convertToDict(processedList)
 
-	#nltk feature extraction
-	vectorizedMatrix = vec.fit_transform(wordList)
+	#nltk feature extraction from the processed list of words
+	vectorizedExtraction = vec.fit_transform(processedList)
+	vectorizedMatrix = vectorizedExtraction.toarray()
+	#vectorizedTfidfMatrix = tfidf.fit_transform(vectorizedMatrix)
+
+	#test = vectorizedTfidfMatrix.toarray()
+
+	j = open("tfidfMatrix", 'w')
+	for listitem in vectorizedMatrix:
+		j.write('%s\n' % listitem)
 
 
 	#vectorized list of features
 	featureNames = vec.get_feature_names()
 
+
 	return vectorizedMatrix, labelList
 
 
-	#writeToFile(wordList,featureNames)
-
-
-dataMatrix, labelList = PreProcessing()
 
 def trainingData(vectorizedMatrix, labelList):
 
-	X = vectorizedMatrix.toarray()
+	X = vectorizedMatrix
 	y = labelList
 
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4, random_state=42)
@@ -143,6 +171,9 @@ def trainingData(vectorizedMatrix, labelList):
 	print(accuracy)
 
 
+
+
+dataMatrix, labelList = PreProcessing()
 trainingData(dataMatrix, labelList)
 
 
