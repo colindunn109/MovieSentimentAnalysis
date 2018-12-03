@@ -6,16 +6,19 @@ import sys
 import numpy
 import nltk
 import re
-#import pandas
 from nltk.corpus import stopwords
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
+
 
 
 wordList = []
 labelList = []
-vec = CountVectorizer(ngram_range=(1, 2), token_pattern=r'\b\w+\b', min_df=1)
+vec = CountVectorizer()
+vectorizedMatrix = []
 
 
 # Load and read our data set
@@ -81,15 +84,13 @@ def writeToFile(wordList, featureNames):
 	for listitem in featureNames:
 		f.write('%s\n' % listitem)
 
+# funciton to create a list of labels given the DataSet
+
 def getLabelList(trainSet):
 	for i in range(0, len(trainSet)):
 		trainInstance = trainSet[i]
 		labelList.append(trainInstance[3])
 	return labelList
-
-
-
-	
 
 
 
@@ -102,10 +103,6 @@ def PreProcessing():
 
 	#List of all the Labels in the Data Set
 	labelList = getLabelList(dataSet)
-
-	#newList = filterNonAlphabetical(wordList)
-	#for word in newList :
-		#print(word)
 
 	#Cleaned word list
 	processedList = preProcessingStopWords(wordList)
@@ -122,11 +119,31 @@ def PreProcessing():
 	#vectorized list of features
 	featureNames = vec.get_feature_names()
 
+	return vectorizedMatrix, labelList
+
 
 	#writeToFile(wordList,featureNames)
 
-PreProcessing()
 
+dataMatrix, labelList = PreProcessing()
+
+def trainingData(vectorizedMatrix, labelList):
+
+	X = vectorizedMatrix.toarray()
+	y = labelList
+
+	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4, random_state=42)
+
+	classifier = GaussianNB()
+	classifier.fit(X_train, y_train)
+
+	prediction = classifier.predict(X_test)
+
+	accuracy = accuracy_score(y_test, prediction)
+	print(accuracy)
+
+
+trainingData(dataMatrix, labelList)
 
 
 
