@@ -14,7 +14,6 @@ from sklearn.naive_bayes import GaussianNB
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn import tree
 
 from sklearn.model_selection import cross_val_score
 
@@ -166,46 +165,37 @@ def trainingData(vectorizedMatrix, labelList):
 
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4, random_state=42)
 
+
 	#classifier = GaussianNB()
 	classifier2 = LogisticRegression()
-	makeCsv(X,y,classifier2,'train.csv',X_test)
-	'''
-	logreg = classifier2.fit(X, y)
-	predictedLabels = logreg.predict(X_test)
-	for val in predictedLabels:
-		print(val)
-	'''
-	#makeCsv(X,y,classifier2,'train.csv',X_Test)
-	'''
+
 	scores = cross_val_score(classifier2, X, y, cv=5)
 	print(scores)
-	'''
 
-
-	'''
-	classifier3 = tree.DecisionTreeClassifier()
-	clf = classifier3.fit(X,y)
-	print(clf.predict(X_test))
-	'''
 	#prediction = classifier.predict(X_test)
 
 	#accuracy = accuracy_score(y_test, prediction)
 	#print(accuracy)
 
 
-def makeCsv(X, Y, classifier, dataset,X_test):
-	openData = open(dataset)
-	data = list(csv.reader(openData)) 	
-	w = open("output.csv" , "w")
-	logreg = classifier.fit(X, Y)
-	predictedLabels = logreg.predict(X_test)
-	for i,val in enumerate(predictedLabels):
-		print(val)
-		w.write(data[i][0] + " , " + val + '\n')
-
 
 
 dataMatrix, labelList = PreProcessing()
 trainingData(dataMatrix, labelList)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
