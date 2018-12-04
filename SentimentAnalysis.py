@@ -168,9 +168,10 @@ def trainingData(vectorizedMatrix, labelList):
 
 	#classifier = GaussianNB()
 	classifier2 = LogisticRegression()
+	makeCsv(X,y,classifier2,'train.csv',X_test)
 
-	scores = cross_val_score(classifier2, X, y, cv=5)
-	print(scores)
+	#scores = cross_val_score(classifier2, X, y, cv=5)
+	#print(scores)
 
 	#prediction = classifier.predict(X_test)
 
@@ -179,6 +180,15 @@ def trainingData(vectorizedMatrix, labelList):
 
 
 
+def makeCsv(X, Y, classifier, dataset,X_test):
+	openData = open(dataset)
+	data = list(csv.reader(openData)) 	
+	w = open("output.csv" , "w")
+	logreg = classifier.fit(X, Y)
+	predictedLabels = logreg.predict(X_test)
+	for i,val in enumerate(predictedLabels):
+		print(val)
+		w.write(data[i][0] + " , " + val + '\n')
 
 dataMatrix, labelList = PreProcessing()
 trainingData(dataMatrix, labelList)
