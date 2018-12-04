@@ -11,8 +11,11 @@ from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import GaussianNB
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from sklearn.feature_extraction.text import TfidfVectorizer
+
+from sklearn.model_selection import cross_val_score
 
 
 # ------------------ Variable Names -------------------------
@@ -23,7 +26,7 @@ labelList = []
 vec = TfidfVectorizer()
 #tfidf = TfidfTransformer(smooth_idf = False)
 vectorizedMatrix = []
-
+#ngram_range=(1, 2), token_pattern=r'\b\w+\b', min_df=1
 
 
 # ------------------ Data Set Set-up Functions -----------------------
@@ -46,7 +49,7 @@ def wordListCreator(trainSet):
 	for i in range(0,len(trainSet)):
 		instanceList = trainSet[i]
 		instanceWords = instanceList[2]
-		instanceWords = re.sub(r'[^a-zA-Z ]', ' ', instanceWords)
+		#instanceWords = re.sub(r'[^a-zA-Z ]', ' ', instanceWords)
 		#tokenWords = nltk.word_tokenize(instanceWords)
 		wordList.append(instanceWords)
 	#print(wordList)
@@ -136,15 +139,15 @@ def PreProcessing():
 	wordDictionary = convertToDict(processedList)
 
 	#nltk feature extraction from the processed list of words
-	vectorizedExtraction = vec.fit_transform(processedList)
+	vectorizedExtraction = vec.fit_transform(wordList)
 	vectorizedMatrix = vectorizedExtraction.toarray()
 	#vectorizedTfidfMatrix = tfidf.fit_transform(vectorizedMatrix)
 
 	#test = vectorizedTfidfMatrix.toarray()
 
-	j = open("tfidfMatrix", 'w')
-	for listitem in vectorizedMatrix:
-		j.write('%s\n' % listitem)
+	#j = open("tfidfMatrix", 'w')
+	#for listitem in vectorizedMatrix:
+	#	j.write('%s\n' % listitem)
 
 
 	#vectorized list of features
@@ -162,13 +165,17 @@ def trainingData(vectorizedMatrix, labelList):
 
 	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4, random_state=42)
 
-	classifier = GaussianNB()
-	classifier.fit(X_train, y_train)
 
-	prediction = classifier.predict(X_test)
+	#classifier = GaussianNB()
+	classifier2 = LogisticRegression()
 
-	accuracy = accuracy_score(y_test, prediction)
-	print(accuracy)
+	scores = cross_val_score(classifier2, X, y, cv=5)
+	print(scores)
+
+	#prediction = classifier.predict(X_test)
+
+	#accuracy = accuracy_score(y_test, prediction)
+	#print(accuracy)
 
 
 
