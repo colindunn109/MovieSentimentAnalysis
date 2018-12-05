@@ -21,12 +21,12 @@ from sklearn.model_selection import cross_val_score
 # ------------------ Variable Names -------------------------
 
 
-wordList = []
 labelList = []
-vec = TfidfVectorizer()
+testList = []
+vec = CountVectorizer(ngram_range=(1, 2), token_pattern=r'\b\w+\b', min_df=1, max_features=20000)
 #tfidf = TfidfTransformer(smooth_idf = False)
 vectorizedMatrix = []
-#ngram_range=(1, 2), token_pattern=r'\b\w+\b', min_df=1
+#ngram_range=(1, 2), token_pattern=r'\b\w+\b', min_df=1, max_features = 20000
 
 
 # ------------------ Data Set Set-up Functions -----------------------
@@ -36,16 +36,24 @@ vectorizedMatrix = []
 # Load and read our data set
 def loadDataset():
  	trainSet = []
+ 	testSet = []
  	train = open('train.csv')
- 	trainData = list(csv.reader(train)) 	
+ 	test = open('testset_1.csv')
+ 	trainData = list(csv.reader(train))
+ 	testData = list(csv.reader(test)) 	
  	for i in range(1, len(trainData)):
  		trainSet.append(trainData[i])
 
- 	return trainSet
+ 	for i in range(1, len(testData)):
+ 		testSet.append(testData[i])
+
+
+ 	return trainSet, testSet
 
 
 # iterates through dataSet and creates a list of all words
 def wordListCreator(trainSet):
+	wordList = []
 	for i in range(0,len(trainSet)):
 		instanceList = trainSet[i]
 		instanceWords = instanceList[2]
@@ -124,10 +132,11 @@ def writeToFile(wordList, featureNames):
 
 def PreProcessing():
 	#dataset in list form
-	dataSet = loadDataset()
+	dataSet, testingSet = loadDataset()
 
 	#List of all the phrases in DataSet
 	wordList = wordListCreator(dataSet)
+	testList = wordListCreator(testingSet)
 
 	#List of all the Labels in the Data Set
 	labelList = getLabelList(dataSet)
@@ -141,6 +150,11 @@ def PreProcessing():
 	#nltk feature extraction from the processed list of words
 	vectorizedExtraction = vec.fit_transform(wordList)
 	vectorizedMatrix = vectorizedExtraction.toarray()
+
+	vectorizedTestingExtraction = vec.transform(testList)
+	vectorizedTestingMatrix = vectorizedTestingExtraction.toarray()
+
+
 	#vectorizedTfidfMatrix = tfidf.fit_transform(vectorizedMatrix)
 
 	#test = vectorizedTfidfMatrix.toarray()
@@ -153,29 +167,36 @@ def PreProcessing():
 	#vectorized list of features
 	featureNames = vec.get_feature_names()
 
-
-	return vectorizedMatrix, labelList
-
+	writeToFile(wordList, featureNames)
 
 
-def trainingData(vectorizedMatrix, labelList):
+	return vectorizedMatrix, labelList, vectorizedTestingMatrix
+
+
+
+def trainingData(vectorizedMatrix, labelList, vectorizedTestingMatrix):
 
 	X = vectorizedMatrix
 	y = labelList
+	X_test = vectorizedTestingMatrix
 
-	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4, random_state=42)
+	#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4, random_state=42)
 
 
 	#classifier = GaussianNB()
-	classifier2 = LogisticRegression()
-	makeCsv(X,y,classifier2,'train.csv',X_test)
+	classifier2 = LogisticRegression(multi_class='auto')
+	#classifier2.fit(X_train,y_train)
+	#makeCsv(X,y,classifier2,'train.csv',X_test)
+	#makeCsv(X,y,classifier2,'testset_1.csv', vectorizedTestingMatrix)
 
-	#scores = cross_val_score(classifier2, X, y, cv=5)
-	#print(scores)
 
-	#prediction = classifier.predict(X_test)
+	# cross validation score on data set.
+	scores = cross_val_score(classifier2, X, y, cv=5)
+	print(scores)
 
-	#accuracy = accuracy_score(y_test, prediction)
+	# checks accuracy against predicted labels and existing labels. 
+	#prediction = classifier2.predict(X_test)
+	#accuracy = accuracy_score(y, prediction)
 	#print(accuracy)
 
 
@@ -187,23 +208,11 @@ def makeCsv(X, Y, classifier, dataset,X_test):
 	logreg = classifier.fit(X, Y)
 	predictedLabels = logreg.predict(X_test)
 	for i,val in enumerate(predictedLabels):
-		print(val)
-		w.write(data[i][0] + " , " + val + '\n')
-
-dataMatrix, labelList = PreProcessing()
-trainingData(dataMatrix, labelList)
+		w.write(data[i][0] + "," + val + '\n')
 
 
-
-
-
-
-
-
-
-
-
-
+dataMatrix, labelList, testMatrix = PreProcessing()
+trainingData(dataMatrix, labelList, testMatrix)
 
 
 
