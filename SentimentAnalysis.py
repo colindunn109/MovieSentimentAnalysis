@@ -138,6 +138,7 @@ def PreProcessing():
 	wordList = wordListCreator(dataSet)
 	testList = wordListCreator(testingSet)
 
+
 	#List of all the Labels in the Data Set
 	labelList = getLabelList(dataSet)
 
@@ -187,12 +188,12 @@ def trainingData(vectorizedMatrix, labelList, vectorizedTestingMatrix):
 	classifier2 = LogisticRegression(multi_class='auto')
 	#classifier2.fit(X_train,y_train)
 	#makeCsv(X,y,classifier2,'train.csv',X_test)
-	#makeCsv(X,y,classifier2,'testset_1.csv', vectorizedTestingMatrix)
+	makeCsv(X,y,classifier2,'testset_1.csv', vectorizedTestingMatrix)
 
 
 	# cross validation score on data set.
-	scores = cross_val_score(classifier2, X, y, cv=5)
-	print(scores)
+	#scores = cross_val_score(classifier2, X, y, cv=5)
+	#print(scores)
 
 	# checks accuracy against predicted labels and existing labels. 
 	#prediction = classifier2.predict(X_test)
@@ -203,12 +204,14 @@ def trainingData(vectorizedMatrix, labelList, vectorizedTestingMatrix):
 
 def makeCsv(X, Y, classifier, dataset,X_test):
 	openData = open(dataset)
-	data = list(csv.reader(openData)) 	
-	w = open("output.csv" , "w")
+	data = list(csv.reader(openData))
+	data.pop(0) 	
+	w = open("DunnJohn_predictions.csv" , "w")
+	w.write("PhraseId, Sentiment\n")
 	logreg = classifier.fit(X, Y)
 	predictedLabels = logreg.predict(X_test)
-	for i,val in enumerate(predictedLabels):
-		w.write(data[i][0] + "," + val + '\n')
+	for i in range(0,len(predictedLabels)):
+		w.write(data[i][0] + ',' + predictedLabels[i] + '\n')
 
 
 dataMatrix, labelList, testMatrix = PreProcessing()
