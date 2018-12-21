@@ -1,8 +1,4 @@
-#ML Asg 3
-# Phil John
-# Colin Dunn 
-# pjohn@ucsc.edu
-# cjdunn@ucsc.edu
+#ML Project
 
 
 import csv
@@ -12,7 +8,7 @@ import sys
 import numpy
 import nltk
 import re
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords  
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
@@ -141,28 +137,21 @@ def PreProcessing():
 	wordList = wordListCreator(dataSet)
 	testList = wordListCreator(testingSet)
 
-
 	#List of all the Labels in the Data Set
 	labelList = getLabelList(dataSet)
 
 	#Cleaned word list of stop words
 	processedList = preProcessingStopWords(wordList)
 
-	#Converted words in dataset to dictionary with total appearances as value
-	wordDictionary = convertToDict(processedList)
 
 	#nltk feature extraction from the processed list of words
-	vectorizedExtraction = vec.fit_transform(wordList)
+	# create "BoW" matrix fit to training data
+	vectorizedExtraction = vec.fit_transform(processedList)
 	vectorizedMatrix = vectorizedExtraction.toarray()
-
+ 
+	#create "BoW" matrix to prior fit for the testing
 	vectorizedTestingExtraction = vec.transform(testList)
 	vectorizedTestingMatrix = vectorizedTestingExtraction.toarray()
-
-
-	#vectorized list of features
-	featureNames = vec.get_feature_names()
-
-	writeToFile(wordList, featureNames)
 
 
 	return vectorizedMatrix, labelList, vectorizedTestingMatrix
@@ -175,25 +164,14 @@ def trainingData(vectorizedMatrix, labelList, vectorizedTestingMatrix):
 	y = labelList
 	X_test = vectorizedTestingMatrix
 
-	X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4, random_state=42)
 
-
-	#classifier = GaussianNB()
 	classifier2 = LogisticRegression(multi_class='auto')
-	#classifier3 = SVC(kernel='linear')
-	#classifier3.fit(X_train,y_train)
-	#makeCsv(X,y,classifier2,'train.csv',X_test)
 	makeCsv(X,y,classifier2,'testset_1.csv', vectorizedTestingMatrix)
 
 
-	# cross validation score on data set.
+	# cross validation accuracy score on data set.
 	scores = cross_val_score(classifier2, X, y, cv=5)
 	print(scores)
-
-	# checks accuracy against predicted labels and existing labels. 
-	#prediction = classifier3.predict(X_test)
-	#accuracy = accuracy_score(y, prediction)
-	#print(accuracy)
 
 
 
@@ -201,7 +179,7 @@ def makeCsv(X, Y, classifier, dataset,X_test):
 	openData = open(dataset)
 	data = list(csv.reader(openData))
 	data.pop(0) 	
-	w = open("DunnJohn_predictions.csv" , "w")
+	w = open("predictions.csv" , "w")
 	w.write("PhraseId, Sentiment\n")
 	logreg = classifier.fit(X, Y)
 	predictedLabels = logreg.predict(X_test)
@@ -222,6 +200,17 @@ trainingData(dataMatrix, labelList, testMatrix)
 	#makeCsv(X,y,classifier2,'train.csv',X_test)
 
 
+	# training data split into test and train
+	#X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.4, random_state=42)
+
+	# checks accuracy against predicted labels and existing labels. 
+	#prediction = classifier3.predict(X_test)
+	#accuracy = accuracy_score(y, prediction)
+	#print(accuracy)
+
+	#Converted words in dataset to dictionary with total appearances as value
+	#wordDictionary = convertToDict(processedList)
+
 	# ----PREPROCESSING CODE-----
 
 	#tfidf = TfidfTransformer(smooth_idf = False)
@@ -234,12 +223,19 @@ trainingData(dataMatrix, labelList, testMatrix)
 	#	j.write('%s\n' % listitem)
 
 
+	#vectorized list of features
+	#featureNames = vec.get_feature_names()
+
+	#writeToFile(wordList, featureNames)
+
 
 	# ----PREPROCESSING CODE-----
 
 
 	#instanceWords = re.sub(r'[^a-zA-Z ]', ' ', instanceWords)
 	#tokenWords = nltk.word_tokenize(instanceWords)
+
+
 
 
 
